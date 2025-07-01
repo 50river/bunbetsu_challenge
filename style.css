@@ -1,0 +1,79 @@
+/* 金沢市ごみ分別チャレンジ 用スタイル */
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 20px;
+      padding: 0;
+    }
+    h1 {
+      font-size: 1.8em;
+    }
+    .question {
+      font-size: 1.4em;
+      margin: 20px 10px 10px;
+    }
+    .result {
+      font-size: 1.2em;
+      margin: 10px;
+      color: #444;
+      min-height: 1.5em;
+    }
+    .choices {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .choices button {
+      width: 100%;
+      max-width: 300px;
+      padding: 12px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background-color: #f0f0f0;
+    }
+    .choices button:hover {
+      background-color: #ddd;
+    }
+    .choices button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    #timer {
+      font-size: 1.1em;
+      margin-top: 10px;
+    }
+    button.start, .back-btn, .share-btn {
+      font-size: 1.1em;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin: 10px;
+    }
+    .summary {
+      margin-top: 30px;
+      text-align: left;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      font-size: 0.95em;
+    }
+    .summary table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .summary th, .summary td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    .summary th {
+      background-color: #f8f8f8;
+    }
+    .note {
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 10px;
+    }
