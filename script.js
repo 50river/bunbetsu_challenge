@@ -1,4 +1,5 @@
 // 金沢市ごみ分別チャレンジ 用スクリプト
+// 回答時には詳細分類（例：燃やさないごみ（金属））を表示
     let quizData = [];
     let currentIndex = 0;
     let score = 0;
@@ -43,7 +44,8 @@
             .filter(row => row['品　名'] && row['ごみの種類'])
             .map(row => ({
               item: row['品　名'],
-              category: simplifyCategory(row['ごみの種類'])
+              category: simplifyCategory(row['ごみの種類']),
+              fullCategory: row['ごみの種類']
             }));
         });
     }
@@ -68,16 +70,17 @@
     function answer(choice) {
       const current = quizData[currentIndex];
       const correct = current.category;
+      const full = current.fullCategory || correct;
       const isCorrect = (choice === correct);
       document.querySelectorAll('.choices button').forEach(btn => btn.disabled = true);
 
       if (isCorrect) {
         score++;
-        document.getElementById('result').innerText = '正解！';
+        document.getElementById('result').innerText = `正解！「${full}」です。`;
       } else {
-        document.getElementById('result').innerText = `不正解。正しくは「${correct}」です。`;
+        document.getElementById('result').innerText = `不正解。正しくは「${full}」です。`;
       }
-      answeredList.push({ item: current.item, correct: correct, user: choice, result: isCorrect });
+      answeredList.push({ item: current.item, correct: correct, full: full, user: choice, result: isCorrect });
       currentIndex++;
       setTimeout(showQuestion, 500);
     }
@@ -93,7 +96,7 @@
         <button class="share-btn" onclick="shareResult(${score}, ${total}, ${accuracy})">結果をSNSでシェア</button>
         <div class="summary">
         <table>
-          <tr><th>#</th><th>品名</th><th>あなたの回答</th><th>正解</th><th>結果</th></tr>
+          <tr><th>#</th><th>品名</th><th>あなたの回答</th><th>正解（詳細）</th><th>結果</th></tr>
       `;
 
       answeredList.forEach((entry, i) => {
@@ -102,7 +105,7 @@
             <td>${i + 1}</td>
             <td>${entry.item}</td>
             <td>${entry.user}</td>
-            <td>${entry.correct}</td>
+            <td>${entry.full}</td>
             <td>${entry.result ? '〇' : '×'}</td>
           </tr>
         `;
@@ -114,7 +117,7 @@
 
     function shareResult(score, total, accuracy) {
       const wrongs = answeredList.filter(e => !e.result);
-      let detail = wrongs.map(e => `「${e.item}」は${e.correct}`).join('、');
+      let detail = wrongs.map(e => `「${e.item}」は${e.full}`).join('、');
       if (detail.length > 100) {
         detail = detail.substring(0, 97) + '…';
       }
