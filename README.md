@@ -12,6 +12,7 @@
 
 ブラウザで開くだけで遊べます。  
 ローカルでも `index.html` をダブルクリックするだけでOKです。
+HTML ファイルと同じフォルダにある style.css と script.js を自動で読み込みます。
 
 ## 🗂 利用データ
 
@@ -30,8 +31,10 @@
 
 ```
 kanazawa-gomibunbetsu/
-├── index.html        ... メインアプリ
-└──  README.md         ... この説明書
+├── index.html        ... メインHTML
+├── style.css        ... ゲーム画面のスタイル
+├── script.js        ... ゲームのロジック
+└── README.md        ... この説明書
 ```
 
 ## 📝 ライセンス・注意
