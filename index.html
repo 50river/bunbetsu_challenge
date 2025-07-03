@@ -13,6 +13,30 @@
   <h1 id="title">金沢市ごみ分別チャレンジ<span aria-hidden="true">😊</span></h1>
   <p id="intro">表示された品名を、正しいごみの種類に分類しよう！</p>
   <p class="note">※分別データは金沢市の <a href="https://catalog-data.city.kanazawa.ishikawa.jp/dataset/172014-gomibunbetsujiten" target="_blank">オープンデータ</a> を使用しています。</p>
+  <div id="hints">
+    <h2>分別のヒント</h2>
+    <ol>
+      <li>材質をチェックする
+        <ul>
+          <li>プラスチック製 → 「資源（プラ）」と書かれていれば「資源ごみ」、ただしリサイクル不可とあれば「燃やすごみ」</li>
+          <li>金属や家電 → 「燃やさないごみ（金属）」「小型家電回収対象」</li>
+          <li>紙製 → 一見「資源」に見えても、汚れがある・コーティングされている紙容器は「燃やすごみ」</li>
+        </ul>
+      </li>
+      <li>サイズで判断する
+        <ul>
+          <li>小さい電化製品（ICレコーダーなど） → 「燃やさないごみ（金属）」または「小型家電回収」</li>
+          <li>大型家電 → 粗大ごみ、収集方法が異なる場合も</li>
+        </ul>
+      </li>
+      <li>用途を思い出す
+        <ul>
+          <li>食品容器 → 「プラスチック資源」か「燃やすごみ」かは、洗って再利用可能な状態かどうかが分かれ目</li>
+          <li>電池や蛍光灯 → 有害ごみ扱い、回収日が限定されていることが多い</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
   <button class="start" onclick="startGame()">ゲーム開始</button>
 
   <div id="game" style="display:none;">

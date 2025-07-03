@@ -13,6 +13,7 @@
       document.getElementById('title').style.display = 'none';
       document.getElementById('intro').style.display = 'none';
       document.querySelector('.note').style.display = 'none';
+      document.getElementById('hints').style.display = 'none';
       currentIndex = 0;
       score = 0;
       timeLeft = 60;
