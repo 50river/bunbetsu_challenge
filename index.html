@@ -5,10 +5,12 @@
   <title>金沢市ごみ分別チャレンジ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+  <!-- 親しみやすいフォントを読み込み -->
+  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1 id="title">金沢市ごみ分別チャレンジ</h1>
+  <h1 id="title">金沢市ごみ分別チャレンジ<span aria-hidden="true">😊</span></h1>
   <p id="intro">表示された品名を、正しいごみの種類に分類しよう！</p>
   <p class="note">※分別データは金沢市の <a href="https://catalog-data.city.kanazawa.ishikawa.jp/dataset/172014-gomibunbetsujiten" target="_blank">オープンデータ</a> を使用しています。</p>
   <button class="start" onclick="startGame()">ゲーム開始</button>
