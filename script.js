@@ -63,7 +63,9 @@
       if (currentIndex >= quizData.length) return endGame();
       const q = quizData[currentIndex];
       document.getElementById('question').innerText = `「${q.item}」はどのごみ？`;
-      document.getElementById('result').innerText = '\u00a0';
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerText = '\u00a0';
+      resultDiv.classList.remove('correct', 'incorrect');
       document.querySelectorAll('.choices button').forEach(btn => btn.disabled = false);
     }
 
@@ -72,13 +74,16 @@
       const correct = current.category;
       const full = current.fullCategory || correct;
       const isCorrect = (choice === correct);
+      const resultDiv = document.getElementById('result');
       document.querySelectorAll('.choices button').forEach(btn => btn.disabled = true);
 
       if (isCorrect) {
         score++;
-        document.getElementById('result').innerText = `正解！「${full}」です。`;
+        resultDiv.innerText = `\u2728正解！「${full}」です\u2728`;
+        resultDiv.classList.add('correct');
       } else {
-        document.getElementById('result').innerText = `不正解。正しくは「${full}」です。`;
+        resultDiv.innerText = `\u274C不正解。正しくは「${full}」です。`;
+        resultDiv.classList.add('incorrect');
       }
       answeredList.push({ item: current.item, correct: correct, full: full, user: choice, result: isCorrect });
       currentIndex++;
