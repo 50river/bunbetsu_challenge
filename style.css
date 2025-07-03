@@ -125,5 +125,6 @@ h1 {
 }
 #hints ul {
   list-style-type: disc;
-  margin-left: 20px;
+  margin-left: 1em; /* これで1スペース程度のインデント */
+  padding-left: 1em;
 }
