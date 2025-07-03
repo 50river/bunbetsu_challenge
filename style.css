@@ -120,11 +120,8 @@ h1 {
   font-size: 1.2em;
   margin-bottom: 8px;
 }
-#hints ol {
-  margin-left: 20px;
-}
+
 #hints ul {
   list-style-type: disc;
-  margin-left: 1em; /* これで1スペース程度のインデント */
-  padding-left: 1em;
+  margin-left: 0.5em;
 }
