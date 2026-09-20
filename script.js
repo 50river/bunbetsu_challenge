@@ -127,10 +127,14 @@
       questionEl.innerText = `「${q.item}」はどのごみ？`;
       resultDiv.innerText = '\u00a0';
       resultDiv.classList.remove('correct', 'incorrect');
-      document.querySelectorAll('.choices button').forEach(btn => btn.disabled = false);
+      document.querySelectorAll('.choices button').forEach(btn => {
+        btn.disabled = false;
+        btn.blur();
+      });
     }
 
-    function answer(choice) {
+    function answer(choice, button) {
+      if (button) button.blur();
       if (gameEnded) return;
       const current = quizData[currentIndex];
       if (!current) return;

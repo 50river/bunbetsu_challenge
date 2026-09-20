@@ -66,8 +66,14 @@ h1 {
   background-color: #ffefd5;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.choices button:hover {
-  background-color: #ffdfb6;
+@media (hover: hover) and (pointer: fine) {
+  .choices button:hover {
+    background-color: #ffdfb6;
+  }
+}
+
+.choices button:focus:not(:focus-visible) {
+  outline: none;
 }
 .choices button:disabled {
   background-color: #ccc;
