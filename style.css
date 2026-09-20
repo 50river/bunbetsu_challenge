@@ -71,23 +71,19 @@ h1 {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
-@media (hover: hover) and (pointer: fine) {
-  .choices button:hover {
-    background-color: #ffdfb6;
-  }
+.choices button:not(:disabled):hover,
+.choices button:not(:disabled):focus,
+.choices button:not(:disabled):active {
+  background-color: #ffefd5;
 }
 
-.choices button:focus:not(:focus-visible) {
+.choices button:focus {
   outline: none;
 }
 
-@media (hover: none), (pointer: coarse) {
-  .choices button:not(:disabled),
-  .choices button:not(:disabled):hover,
-  .choices button:not(:disabled):focus,
-  .choices button:not(:disabled):active {
-    background-color: #ffefd5;
-  }
+.choices button:focus-visible {
+  outline: 3px solid #ea5532;
+  outline-offset: 2px;
 }
 .choices button:disabled {
   background-color: #ccc;
