@@ -65,6 +65,11 @@ h1 {
   border-radius: 8px;
   background-color: #ffefd5;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #222;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 @media (hover: hover) and (pointer: fine) {
   .choices button:hover {
@@ -74,6 +79,15 @@ h1 {
 
 .choices button:focus:not(:focus-visible) {
   outline: none;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .choices button:not(:disabled),
+  .choices button:not(:disabled):hover,
+  .choices button:not(:disabled):focus,
+  .choices button:not(:disabled):active {
+    background-color: #ffefd5;
+  }
 }
 .choices button:disabled {
   background-color: #ccc;
