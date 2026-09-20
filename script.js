@@ -4,8 +4,10 @@
     let currentIndex = 0;
     let score = 0;
     let timer;
+    let questionTimeout;
     let timeLeft = 60;
     let answeredList = [];
+    let gameEnded = false;
 
     function startGame() {
       document.querySelector('button.start').style.display = 'none';
@@ -14,10 +16,13 @@
       document.getElementById('intro').style.display = 'none';
       document.querySelector('.note').style.display = 'none';
       document.getElementById('hints').style.display = 'none';
+      clearInterval(timer);
+      clearTimeout(questionTimeout);
       currentIndex = 0;
       score = 0;
       timeLeft = 60;
       answeredList = [];
+      gameEnded = false;
 
       document.getElementById('timer').innerText = `残り時間: ${timeLeft}秒`;
 
@@ -27,7 +32,8 @@
         showQuestion();
         timer = setInterval(() => {
           timeLeft--;
-          document.getElementById('timer').innerText = `残り時間: ${timeLeft}秒`;
+          const timerEl = document.getElementById('timer');
+          if (timerEl) timerEl.innerText = `残り時間: ${Math.max(timeLeft, 0)}秒`;
           if (timeLeft <= 0) {
             clearInterval(timer);
             endGame();
@@ -66,25 +72,38 @@
 
     function simplifyCategory(category) {
       if (!category) return 'その他';
-      if (category.includes('燃やす')) return '燃やすごみ';
-      if (category.includes('燃やさない')) return '燃やさないごみ';
-      if (category.includes('資源')) return '資源ごみ';
-      if (category.includes('粗大')) return '粗大ごみ';
+      const normalized = category.replace(/[\s\u3000]+/g, '').trim();
+
+      // 詳細区分（例：燃やさないごみ（金属））をゲームの5択へまとめる。
+      if (normalized.startsWith('燃やさないごみ')) return '燃やさないごみ';
+      if (normalized.startsWith('燃やすごみ')) return '燃やすごみ';
+      if (normalized.startsWith('資源')) return '資源ごみ';
+      if (normalized.includes('粗大ごみ')) return '粗大ごみ';
+
+      // 「市で収集できないもの」など、上記4分類に入らない区分。
       return 'その他';
     }
 
     function showQuestion() {
-      if (currentIndex >= quizData.length) return endGame();
+      if (gameEnded) return;
+      if (currentIndex >= quizData.length) {
+        endGame();
+        return;
+      }
       const q = quizData[currentIndex];
-      document.getElementById('question').innerText = `「${q.item}」はどのごみ？`;
+      const questionEl = document.getElementById('question');
       const resultDiv = document.getElementById('result');
+      if (!questionEl || !resultDiv) return;
+      questionEl.innerText = `「${q.item}」はどのごみ？`;
       resultDiv.innerText = '\u00a0';
       resultDiv.classList.remove('correct', 'incorrect');
       document.querySelectorAll('.choices button').forEach(btn => btn.disabled = false);
     }
 
     function answer(choice) {
+      if (gameEnded) return;
       const current = quizData[currentIndex];
+      if (!current) return;
       const correct = current.category;
       const full = current.fullCategory || correct;
       const isCorrect = (choice === correct);
@@ -101,10 +120,15 @@
       }
       answeredList.push({ item: current.item, correct: correct, full: full, user: choice, result: isCorrect });
       currentIndex++;
-      setTimeout(showQuestion, 500);
+      questionTimeout = setTimeout(showQuestion, 500);
     }
 
     function endGame() {
+      if (gameEnded) return;
+      gameEnded = true;
+      clearInterval(timer);
+      clearTimeout(questionTimeout);
+
       const total = answeredList.length;
       const accuracy = total ? Math.round((score / total) * 100) : 0;
 
@@ -122,9 +146,9 @@
         summaryHTML += `
           <tr>
             <td>${i + 1}</td>
-            <td>${entry.item}</td>
-            <td>${entry.user}</td>
-            <td>${entry.full}</td>
+            <td>${escapeHTML(entry.item)}</td>
+            <td>${escapeHTML(entry.user)}</td>
+            <td>${escapeHTML(entry.full)}</td>
             <td>${entry.result ? '〇' : '×'}</td>
           </tr>
         `;
@@ -135,11 +159,23 @@
     }
 
     function showLoadError() {
+      gameEnded = true;
+      clearInterval(timer);
+      clearTimeout(questionTimeout);
       document.getElementById('game').innerHTML = `
         <h2>データを読み込めませんでした</h2>
         <p>金沢市の分別データを取得できませんでした。時間をおいてもう一度お試しください。</p>
         <button class="back-btn" onclick="location.reload()">スタート画面に戻る</button>
       `;
+    }
+
+    function escapeHTML(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
 
     function shareResult(score, total, accuracy) {
