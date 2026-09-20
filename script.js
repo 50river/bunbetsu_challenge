@@ -8,6 +8,7 @@
     let timeLeft = 60;
     let answeredList = [];
     let gameEnded = false;
+    const choices = ['燃やすごみ', '燃やさないごみ', '資源ごみ', '粗大ごみ', 'その他'];
 
     function startGame() {
       document.querySelector('button.start').style.display = 'none';
@@ -127,14 +128,28 @@
       questionEl.innerText = `「${q.item}」はどのごみ？`;
       resultDiv.innerText = '\u00a0';
       resultDiv.classList.remove('correct', 'incorrect');
-      document.querySelectorAll('.choices button').forEach(btn => {
-        btn.disabled = false;
-        btn.blur();
+      renderChoiceButtons();
+    }
+
+    function renderChoiceButtons() {
+      const choicesEl = document.getElementById('choices');
+      if (!choicesEl) return;
+
+      // iOS Safariは同じbutton要素を再利用すると、前回のタップ表示が
+      // 残ることがある。毎問ボタンを作り直し、擬似クラス状態を引き継がない。
+      choicesEl.replaceChildren();
+      choices.forEach(choice => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = choice;
+        button.addEventListener('click', event => {
+          answer(choice, event.currentTarget);
+        });
+        choicesEl.appendChild(button);
       });
     }
 
     function answer(choice, button) {
-      if (button) button.blur();
       if (gameEnded) return;
       const current = quizData[currentIndex];
       if (!current) return;
@@ -143,6 +158,7 @@
       const isCorrect = (choice === correct);
       const resultDiv = document.getElementById('result');
       document.querySelectorAll('.choices button').forEach(btn => btn.disabled = true);
+      if (button) button.blur();
 
       if (isCorrect) {
         score++;
