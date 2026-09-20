@@ -19,7 +19,10 @@
       timeLeft = 60;
       answeredList = [];
 
+      document.getElementById('timer').innerText = `残り時間: ${timeLeft}秒`;
+
       fetchCSVData().then(data => {
+        if (!data.length) throw new Error('分別データを読み込めませんでした。');
         quizData = shuffle(data).slice(0, 100);
         showQuestion();
         timer = setInterval(() => {
@@ -30,23 +33,33 @@
             endGame();
           }
         }, 1000);
+      }).catch(error => {
+        console.error('分別データの読み込みに失敗しました:', error);
+        showLoadError();
       });
     }
 
     function fetchCSVData() {
-      const url = 'https://catalog-data.city.kanazawa.ishikawa.jp/dataset/ca0f0586-51bc-419c-8a1f-8ce432bf3fd9/resource/4da14709-f5c6-44dc-afc8-f6e9a07656e1/download/bunbetsujiten_r7.4.csv';
+      const url = 'https://catalog-data.city.kanazawa.ishikawa.jp/dataset/ca0f0586-51bc-419c-8a1f-8ce432bf3fd9/resource/4da14709-f5c6-44dc-afc8-f6e9a07656e1/download/bunbetsu2026.csv';
       return fetch(url)
-        .then(res => res.arrayBuffer())
+        .then(res => {
+          if (!res.ok) throw new Error(`CSVの取得に失敗しました (${res.status})`);
+          return res.arrayBuffer();
+        })
         .then(buffer => {
           const decoder = new TextDecoder('shift-jis');
           const text = decoder.decode(buffer);
-          const parsed = Papa.parse(text, { header: true }).data;
+          const parsed = Papa.parse(text, {
+            header: true,
+            skipEmptyLines: true,
+            transformHeader: header => header.replace(/[\s\u3000]+/g, '')
+          }).data;
           return parsed
-            .filter(row => row['品　名'] && row['ごみの種類'])
+            .filter(row => row['品目'] && row['ごみの種類'])
             .map(row => ({
-              item: row['品　名'],
+              item: row['品目'].trim(),
               category: simplifyCategory(row['ごみの種類']),
-              fullCategory: row['ごみの種類']
+              fullCategory: row['ごみの種類'].trim()
             }));
         });
     }
@@ -119,6 +132,14 @@
 
       summaryHTML += '</table></div>';
       document.getElementById('game').innerHTML = summaryHTML;
+    }
+
+    function showLoadError() {
+      document.getElementById('game').innerHTML = `
+        <h2>データを読み込めませんでした</h2>
+        <p>金沢市の分別データを取得できませんでした。時間をおいてもう一度お試しください。</p>
+        <button class="back-btn" onclick="location.reload()">スタート画面に戻る</button>
+      `;
     }
 
     function shareResult(score, total, accuracy) {
