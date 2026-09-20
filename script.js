@@ -46,28 +46,58 @@
     }
 
     function fetchCSVData() {
-      const url = 'https://catalog-data.city.kanazawa.ishikawa.jp/dataset/ca0f0586-51bc-419c-8a1f-8ce432bf3fd9/resource/4da14709-f5c6-44dc-afc8-f6e9a07656e1/download/bunbetsu2026.csv';
-      return fetch(url)
+      const resourceId = '4da14709-f5c6-44dc-afc8-f6e9a07656e1';
+      const apiUrl = `https://catalog-data.city.kanazawa.ishikawa.jp/api/3/action/datastore_search?resource_id=${resourceId}&limit=5000`;
+      const csvUrl = 'https://catalog-data.city.kanazawa.ishikawa.jp/dataset/ca0f0586-51bc-419c-8a1f-8ce432bf3fd9/resource/4da14709-f5c6-44dc-afc8-f6e9a07656e1/download/bunbetsu2026.csv';
+
+      // まずCKAN Datastore API(JSON)を利用する。
+      // ダウンロードCSVは環境によって直接取得に失敗するため、APIを優先する。
+      return fetch(apiUrl)
         .then(res => {
-          if (!res.ok) throw new Error(`CSVの取得に失敗しました (${res.status})`);
-          return res.arrayBuffer();
+          if (!res.ok) throw new Error(`APIの取得に失敗しました (${res.status})`);
+          return res.json();
         })
-        .then(buffer => {
-          const decoder = new TextDecoder('shift-jis');
-          const text = decoder.decode(buffer);
-          const parsed = Papa.parse(text, {
-            header: true,
-            skipEmptyLines: true,
-            transformHeader: header => header.replace(/[\s\u3000]+/g, '')
-          }).data;
-          return parsed
-            .filter(row => row['品目'] && row['ごみの種類'])
-            .map(row => ({
-              item: row['品目'].trim(),
-              category: simplifyCategory(row['ごみの種類']),
-              fullCategory: row['ごみの種類'].trim()
-            }));
+        .then(json => {
+          if (!json.success || !json.result || !Array.isArray(json.result.records)) {
+            throw new Error('APIの応答形式が不正です');
+          }
+          return mapRows(json.result.records);
+        })
+        .catch(apiError => {
+          console.warn('Datastore APIから取得できないためCSVへフォールバックします:', apiError);
+
+          return fetch(csvUrl)
+            .then(res => {
+              if (!res.ok) throw new Error(`CSVの取得に失敗しました (${res.status})`);
+              return res.arrayBuffer();
+            })
+            .then(buffer => {
+              const decoder = new TextDecoder('shift-jis');
+              const text = decoder.decode(buffer);
+              const parsed = Papa.parse(text, {
+                header: true,
+                skipEmptyLines: true
+              }).data;
+              return mapRows(parsed);
+            });
         });
+    }
+
+    function mapRows(rows) {
+      return rows
+        .map(row => {
+          const normalized = {};
+          Object.entries(row).forEach(([key, value]) => {
+            normalized[key.replace(/[\s\u3000]+/g, '')] = value;
+          });
+          return normalized;
+        })
+        .filter(row => row['品目'] && row['ごみの種類'])
+        .map(row => ({
+          item: String(row['品目']).trim(),
+          category: simplifyCategory(String(row['ごみの種類'])),
+          fullCategory: String(row['ごみの種類']).trim()
+        }));
     }
 
     function simplifyCategory(category) {
